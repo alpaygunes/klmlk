@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-
 if (get_magic_quotes_gpc()) {
 	function stripslashes_deep($value)
 	{
