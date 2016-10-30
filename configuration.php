@@ -4,7 +4,7 @@ define("DS", "/");
 define("GIRIS_KARTI", "1");
 	if($_SERVER['HTTP_HOST']=="localhost"){
 		class  configuration{
-			static $site_url		=   'http://localhost/kelimelik';
+			static $site_url		=   'http://localhost/klmlk';
 			static $site_base_url	=   '/';
 			static $db_user 		= 	'root';
 			static $db_password		=	'1234';

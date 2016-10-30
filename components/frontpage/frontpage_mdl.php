@@ -21,7 +21,7 @@ class frontpage_mdl extends BaseModel{
 class kelimelik
 {
 	var $kalip_icin_temel_gruplar = array();
-	var $x=0;
+	var $x=1;
 	var $y=0;
 
 	function kelimelik($kart)
@@ -60,11 +60,11 @@ class kelimelik
 					#öncesinde hafr var ise. Bu bir harf grubudur. sıradakine geç
 					continue;
 				} else {
-					$konum 									= array(count($satir_arr) - ($key + 1),$this->y);
+					$konum 									= array(count($satir_arr) - ($key + 1)+$this->x,$this->y);
 					$this->kalip_icin_temel_gruplar[] 		= array($konum,array_slice($satir_arr, count($satir_arr) - ($key + 1), $key + 1));
 				}
 			} else {
-				$konum									=  array(count($satir_arr) - ($key + 1),$this->y);
+				$konum									=  array(count($satir_arr) - ($key + 1)+$this->x,$this->y);
 				$this->kalip_icin_temel_gruplar[] 		=  array($konum,array_slice($satir_arr, count($satir_arr) - ($key + 1), $key + 1));
 			}
 
@@ -78,11 +78,11 @@ class kelimelik
 					#sonrasında harf var ise. Bu bir harf grubudur. sıradakine geç
 					continue;
 				} else {
-					$konum								= array($key,$this->y);
+					$konum								= array($this->x,$this->y);
 					$this->kalip_icin_temel_gruplar[] 	= array($konum,array_slice($satir_arr, 0, $key + 1));
 				}
 			} else {
-				$konum									= array($key,$this->y);
+				$konum									= array($this->x,$this->y);
 				$this->kalip_icin_temel_gruplar[] 		= array($konum,array_slice($satir_arr, 0, $key + 1));
 			}
 		}
@@ -108,7 +108,7 @@ class kelimelik
 					if (strlen($basi_sonu_temiz_satir[($key + 1)])==0) {
 						$ilk_kirpma_konumu = $key+1;
 						//burada kaldın . Alt kalıpların konumları hesaplanacak. global konumları yanlış oluyor
-						$this->x                = $this->x+$ilk_harf_konumu;
+						$this->x                = $this->x+$key-1;
 						break;
 					}
 				}else{
@@ -124,7 +124,8 @@ class kelimelik
 			if($harf==''){
 				if (isset($basi_sonu_temiz_satir_rvrs[($key + 1)])) {
 					if (strlen($basi_sonu_temiz_satir_rvrs[($key + 1)])==0) {
-						$son_kirpma_konumu = count($basi_sonu_temiz_satir_rvrs)-($key+1);
+						$son_kirpma_konumu 		= count($basi_sonu_temiz_satir_rvrs)-($key+1);
+						$this->x                = $this->x+$key;
 						break;
 					}
 				}else{

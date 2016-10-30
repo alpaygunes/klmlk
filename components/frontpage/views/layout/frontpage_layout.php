@@ -39,9 +39,13 @@ echo '</form>';
 			success: function(json) {
 				$('.sag-sutun').empty();
 				$.each(json, function( index, value ) {
-					console.log(value);
+					$.each(value[1], function( index, deger ) {
+						if(deger==''){
+							value[1][index]="*"
+						}
+					});
 					$('.sag-sutun').append(value[1])
-					$('.sag-sutun').append(value[0][0]+"-")
+					$('.sag-sutun').append(" ----- "+value[0][0]+"-")
 					$('.sag-sutun').append(value[0][1]+"<br>")
 				});
 			},
