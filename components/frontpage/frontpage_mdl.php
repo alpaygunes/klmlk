@@ -14,7 +14,7 @@ class frontpage_mdl extends BaseModel{
 
 
 
-////////////////////////////////////////////////////MANTI SINIFI//////////////
+////////////////////////////////////////////////////MANTIK SINIFI//////////////
 /**
  * Class kelimelik
  */
@@ -33,6 +33,7 @@ class kelimelik
 			$this->coz($satir_arr);
 		}
 
+		$this->tekrarEdenKaliplariTemizle();
 		echo json_encode($this->kalip_icin_temel_gruplar);
 	}
 
@@ -167,5 +168,43 @@ class kelimelik
 		}
 		$satir_arr = array_slice($satir_arr,$ilk_harf_konumu,(count($satir_arr)-(+$ilk_harf_konumu+$son_harf_konumu)));
 		return array($satir_arr,$ilk_harf_konumu,$son_harf_konumu);
+	}
+
+	function tekrarEdenKaliplariTemizle(){
+		$temel_kaliplar_arr = $this->kalip_icin_temel_gruplar;
+		foreach ( $temel_kaliplar_arr as $key=>$temel_grup ) {
+			if($temel_grup[1][0]==''){
+				array_shift($temel_grup[1]);
+				$this->aynisiVarsaKalibiSil($temel_grup[1]);
+			}
+		}
+		$temel_kaliplar_arr = $this->kalip_icin_temel_gruplar;
+		foreach ( $temel_kaliplar_arr as $key=>$temel_grup ) {
+			if($temel_grup[1][count($temel_grup[1])]==''){
+				array_pop($temel_grup[1]);
+				$this->aynisiVarsaKalibiSil($temel_grup[1]);
+			}
+		}
+		$temel_kaliplar_arr = $this->kalip_icin_temel_gruplar;
+		foreach ( $temel_kaliplar_arr as $key=>$temel_grup ) {
+			if($temel_grup[1][count($temel_grup[1])]==''){
+				array_pop($temel_grup[1]);
+			}
+			if($temel_grup[1][0]==''){
+				array_shift($temel_grup[1]);
+			}
+			$this->aynisiVarsaKalibiSil($temel_grup[1]);
+		}
+
+
+	}
+
+	function aynisiVarsaKalibiSil($kontrol_icin_arr){
+		$temel_kaliplar_arr = $this->kalip_icin_temel_gruplar;
+		foreach ( $temel_kaliplar_arr as $key=>$temel_grup ) {
+			if($temel_grup[1]==$kontrol_icin_arr){
+				unset($this->kalip_icin_temel_gruplar[$key]);
+			}
+		}
 	}
 }
