@@ -264,6 +264,7 @@ class kelimelik
 		}
 	}
 
+
 	/**
 	 * @param $basi_sonu_temiz_satir
 	 */
