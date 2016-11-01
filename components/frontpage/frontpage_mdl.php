@@ -6,7 +6,8 @@ class frontpage_mdl extends BaseModel{
 
 	function ajaxGetKelimeOnerileri(){
 		$kart = $_POST['kart'];
-		$kelimelik = new kelimelik($kart);
+		$eldeki_harfler = $_POST['eldeki_harfler'];
+		$kelimelik = new kelimelik($kart,$eldeki_harfler);
 		exit();
 	}
 
@@ -23,9 +24,15 @@ class kelimelik
 	var $kalip_icin_temel_gruplar = array();
 	var $x=1;
 	var $y=0;
+	var $eldeki_harfler;
 
-	function kelimelik($kart)
+	/**
+	 * @param $kart
+	 * @param $eldeki_harfler
+	 */
+	function kelimelik($kart,$eldeki_harfler)
 	{
+		$this->eldeki_harfler = $eldeki_harfler;
 		#satırlardaki kalıp çıkartma işlemi
 		#baştan sona sondan başa full tarama
 		foreach ($kart as $key=>$satir_arr) {
@@ -34,9 +41,15 @@ class kelimelik
 		}
 
 		$this->tekrarEdenKaliplariTemizle();
+		$this->bosKaliplariTemizle();
+		$this->uzunKaliplariTemizle();
+		$this->regexPatternleriniOlustu();
 		echo json_encode($this->kalip_icin_temel_gruplar);
 	}
 
+	/**
+	 * @param $satir_arr
+	 */
 	function coz($satir_arr){
 		$string = implode('', $satir_arr);
 		if (strlen($string)) {
@@ -170,6 +183,9 @@ class kelimelik
 		return array($satir_arr,$ilk_harf_konumu,$son_harf_konumu);
 	}
 
+	/**
+	 *
+	 */
 	function tekrarEdenKaliplariTemizle(){
 		$temel_kaliplar_arr = $this->kalip_icin_temel_gruplar;
 		foreach ( $temel_kaliplar_arr as $key=>$temel_grup ) {
@@ -199,6 +215,9 @@ class kelimelik
 
 	}
 
+	/**
+	 * @param $kontrol_icin_arr
+	 */
 	function aynisiVarsaKalibiSil($kontrol_icin_arr){
 		$temel_kaliplar_arr = $this->kalip_icin_temel_gruplar;
 		foreach ( $temel_kaliplar_arr as $key=>$temel_grup ) {
@@ -206,5 +225,62 @@ class kelimelik
 				unset($this->kalip_icin_temel_gruplar[$key]);
 			}
 		}
+	}
+
+	/**
+	 *
+	 */
+	function bosKaliplariTemizle(){
+		$temel_kaliplar_arr = $this->kalip_icin_temel_gruplar;
+		foreach ( $temel_kaliplar_arr as $key0=>$temel_grup ) {
+			$item_dolu = false;
+			foreach ( $temel_grup[1] as $key1=>$harf ) {
+				if($harf!=''){
+					$item_dolu = true;
+				}
+			}
+			if(!$item_dolu){
+				unset($this->kalip_icin_temel_gruplar[$key0]);
+			}
+		}
+	}
+
+	/**
+	 *
+	 */
+	function uzunKaliplariTemizle(){
+		$temel_kaliplar_arr = $this->kalip_icin_temel_gruplar;
+		foreach ( $temel_kaliplar_arr as $key0=>$temel_grup ) {
+			$basi_sonu_temiz_satir  = $this->trimFirstLast($temel_grup[1])[0];
+			$dolu_item_sayisi       = $this->doluItemSayisi($basi_sonu_temiz_satir);
+			$kalip_boyu             = count($basi_sonu_temiz_satir);
+			$bos_alan               = $kalip_boyu - $dolu_item_sayisi;
+			if($bos_alan==0){
+				continue;
+			}
+			if($bos_alan>strlen($this->eldeki_harfler)){
+				unset($this->kalip_icin_temel_gruplar[$key0]);
+			}
+		}
+	}
+
+	/**
+	 * @param $basi_sonu_temiz_satir
+	 */
+	function doluItemSayisi($basi_sonu_temiz_satir){
+		$harf_sayisi =0 ;
+		foreach ( $basi_sonu_temiz_satir as $key=>$item ) {
+			if($item!=''){
+				$harf_sayisi++;
+			}
+		}
+		return $harf_sayisi;
+	}
+
+	/**
+	 *
+	 */
+	function regexPatternleriniOlustu(){
+
 	}
 }

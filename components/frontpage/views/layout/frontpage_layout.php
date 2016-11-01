@@ -10,13 +10,34 @@ $kart =  "<table class='table table-bordered kart' >\n";
 		$kart .= "\n</tr>\n";
 	}
 $kart .= "</table>\n";
-
-echo '<form enctype="multipart/form-data" id="form-upload">';
-echo $kart;
-echo '</form>';
 ?>
+<form enctype="multipart/form-data" id="form-upload">
+<table class='table table-bordered'>
+	<tr>
+		<td>
+				<?php
+				echo $kart;
+				?>
+		</td>
+		<td class='sag-sutun'>
+			<table class="table">
+				<tr>
+					<td><input type="button" id="gonder" class="btn btn-primary" value="Gönder"></td>
+				</tr>
+				<tr>
+					<td><input type="text" id="eldeki_harfler" name="eldeki_harfler" class="form-control text-left"></td>
+				</tr>
+				<tr>
+					<td class="sonuc"></td>
+				</tr>
+			</table>
 
-<input type="button" id="gonder" class="btn btn-primary" value="Gönder">
+		</td>
+	</tr>
+</table>
+</form>
+
+
 
 <script>
 	$('#gonder').on('click', function() {
@@ -37,16 +58,16 @@ echo '</form>';
 				$('.fa-spin').remove();
 			},
 			success: function(json) {
-				$('.sag-sutun').empty();
+				$('.sonuc').empty();
 				$.each(json, function( index, value ) {
 					$.each(value[1], function( index, deger ) {
 						if(deger==''){
 							value[1][index]="*"
 						}
 					});
-					$('.sag-sutun').append(value[1])
-					$('.sag-sutun').append(" ----- "+value[0][0]+"-")
-					$('.sag-sutun').append(value[0][1]+"<br>")
+					$('.sonuc').append(value[1])
+					$('.sonuc').append(" ----- "+value[0][0]+"-")
+					$('.sonuc').append(value[0][1]+"<br>")
 				});
 			},
 			error: function(xhr, ajaxOptions, thrownError) {
