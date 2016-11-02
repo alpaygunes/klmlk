@@ -61,14 +61,15 @@ $kart .= "</table>\n";
 			success: function(json) {
 				$('.sonuc').empty();
 				$.each(json, function( index, value ) {
-					$.each(value[1], function( index, deger ) {
+					$('.sonuc').append(value+"--------"+index+"<br>")
+					/*$.each(value[1], function( index, deger ) {
 						if(deger==''){
 							value[1][index]="*"
 						}
 					});
 					$('.sonuc').append(value[1])
 					$('.sonuc').append(" ----- "+value[0][0]+"-")
-					$('.sonuc').append(value[0][1]+"<br>")
+					$('.sonuc').append(value[0][1]+"<br>")*/
 				});
 			},
 			error: function(xhr, ajaxOptions, thrownError) {

@@ -22,6 +22,7 @@ class frontpage_mdl extends BaseModel{
 class kelimelik
 {
 	var $kalip_icin_temel_gruplar = array();
+	var $regexler_arr=array();
 	var $x=1;
 	var $y=0;
 	var $eldeki_harfler;
@@ -40,11 +41,11 @@ class kelimelik
 			$this->coz($satir_arr);
 		}
 
-		$this->tekrarEdenKaliplariTemizle();
+		$this->tekrarEdenKaliplariTemizle();// regex temelleri bakımından aynı olanları
 		$this->bosKaliplariTemizle();
 		$this->uzunKaliplariTemizle();
 		$this->regexPatternleriniOlustu();
-		echo json_encode($this->kalip_icin_temel_gruplar);
+		echo json_encode($this->regexler_arr);
 	}
 
 	/**
@@ -282,7 +283,28 @@ class kelimelik
 	 *
 	 */
 	function regexPatternleriniOlustu(){
-
+		$regex_kalip='';
+		$max=0;
+		// önce baştaki kalıbı  oluştur
+		$temel_kaliplar_arr = $this->kalip_icin_temel_gruplar;
+		foreach ( $temel_kaliplar_arr as $key0=>$temel_grup ) {
+			foreach ( $temel_grup[1] as $key1=>$harf ) {
+				if($harf==''){
+					$max++;
+				}else{
+					if(strlen($regex_kalip)){
+						$regex_kalip .="[$this->eldeki_harfler]{{$max}}".$harf;
+					}else{
+						$regex_kalip .="[$this->eldeki_harfler]{0,$max}".$harf;
+					}
+					$max=0;
+				}
+			}
+			$regex_kalip .="[$this->eldeki_harfler]{0,$max}";
+			$this->regexler_arr[] = $regex_kalip;
+			$max=0;
+			$regex_kalip='';
+		}
 	}
 
 }
