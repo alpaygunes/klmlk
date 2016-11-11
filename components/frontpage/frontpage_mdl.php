@@ -8,6 +8,7 @@ class frontpage_mdl extends BaseModel{
 		$kart = $_POST['kart'];
 		$eldeki_harfler = $_POST['eldeki_harfler'];
 		$kelimelik = new kelimelik($kart,$eldeki_harfler);
+		$kelimeleri_hazirla = new kelimeleriHazirla($kelimelik->kalip_icin_temel_gruplar);
 		exit();
 	}
 
@@ -45,7 +46,7 @@ class kelimelik
 		$this->bosKaliplariTemizle();
 		$this->uzunKaliplariTemizle();
 		$this->regexPatternleriniOlustu();
-		echo json_encode($this->regexler_arr);
+		echo json_encode($this->kalip_icin_temel_gruplar);
 	}
 
 	/**
@@ -293,18 +294,53 @@ class kelimelik
 					$max++;
 				}else{
 					if(strlen($regex_kalip)){
-						$regex_kalip .="[$this->eldeki_harfler]{{$max}}".$harf;
+						if($max==0){
+							$regex_kalip .=$harf;
+						}else{
+							$regex_kalip .="[$this->eldeki_harfler]{{$max}}".$harf;
+						}
 					}else{
-						$regex_kalip .="[$this->eldeki_harfler]{0,$max}".$harf;
+						if($max==0){
+							$regex_kalip .=$harf;
+						}else{
+							$regex_kalip .="[$this->eldeki_harfler]{0,$max}".$harf;
+						}
 					}
 					$max=0;
 				}
 			}
-			$regex_kalip .="[$this->eldeki_harfler]{0,$max}";
-			$this->regexler_arr[] = $regex_kalip;
-			$max=0;
-			$regex_kalip='';
+			$regex_kalip                                    .="[$this->eldeki_harfler]{0,$max}";
+			$this->kalip_icin_temel_gruplar[$key0]['regex'] = $regex_kalip;
+			$max                                            =0;
+			$regex_kalip                                    ='';
 		}
 	}
 
+}
+
+
+
+
+////////////////////////////VERİ ÇEKME SINIFI /////////////////
+
+class kelimeleriHazirla{
+	var $db;
+	var $sonuc_arr = array();
+	/**
+	 * @param $kalip_icin_temel_gruplar
+	 */
+	function kelimeleriHazirla($kalip_icin_temel_gruplar){
+		global $db;
+		$this->db = $db;
+		$this->getKelimeler($kalip_icin_temel_gruplar);
+	}
+
+	function getKelimeler($kalip_icin_temel_gruplar){
+		$kelimeler_arr = [];
+		foreach ($kalip_icin_temel_gruplar as $kalip) {
+			$regex      = $kalip['regex'];
+			$sql        = "SELECT HEAD_MULT FROM kelimeler WHERE HEAD_MULT REGEXP '$regex'";
+			$kelimeler_arr[]      = $this->db->get_results($sql);
+		}
+	}
 }

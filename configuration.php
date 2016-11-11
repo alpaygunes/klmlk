@@ -8,7 +8,7 @@ define("GIRIS_KARTI", "1");
 			static $site_base_url	=   '/';
 			static $db_user 		= 	'root';
 			static $db_password		=	'1234';
-			static $db_name			=	'mole';
+			static $db_name			=	'tdk_sozluk';
 			static $db_host			=	'localhost';
             static $base_image_dir			=	'albums';
 			static $base_path		=	'/var/www';
