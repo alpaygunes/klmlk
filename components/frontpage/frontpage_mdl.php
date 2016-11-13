@@ -9,6 +9,8 @@ class frontpage_mdl extends BaseModel{
 		$eldeki_harfler = $_POST['eldeki_harfler'];
 		$kelimelik = new kelimelik($kart,$eldeki_harfler);
 		$kelimeleri_hazirla = new kelimeleriHazirla($kelimelik->kalip_icin_temel_gruplar);
+		$kelimeler_arr =  $kelimeleri_hazirla->sonuc_arr;
+		$kurallari_uygula = new kurallariUygula($kelimeler_arr);
 		exit();
 	}
 
@@ -342,5 +344,16 @@ class kelimeleriHazirla{
 			$sql        = "SELECT HEAD_MULT FROM kelimeler WHERE HEAD_MULT REGEXP '$regex'";
 			$kelimeler_arr[]      = $this->db->get_results($sql);
 		}
+		$this->sonuc_arr = $kelimeler_arr ;
 	}
+}
+
+
+
+
+
+// //////////////////////////////// KURALLARI UYGULA ///////////////////////
+
+class kurallariUygula{
+
 }
