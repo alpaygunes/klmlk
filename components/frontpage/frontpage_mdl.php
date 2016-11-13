@@ -5,12 +5,12 @@ class frontpage_mdl extends BaseModel{
 	}
 
 	function ajaxGetKelimeOnerileri(){
-		$kart = $_POST['kart'];
-		$eldeki_harfler = $_POST['eldeki_harfler'];
-		$kelimelik = new kelimelik($kart,$eldeki_harfler);
-		$kelimeleri_hazirla = new kelimeleriHazirla($kelimelik->kalip_icin_temel_gruplar);
-		$kelimeler_arr =  $kelimeleri_hazirla->sonuc_arr;
-		$kurallari_uygula = new kurallariUygula($kelimeler_arr);
+		$kart 				= $_POST['kart'];
+		$eldeki_harfler 	= $_POST['eldeki_harfler'];
+		$kelimelik 			= new kelimelik($kart,$eldeki_harfler);
+		$kelimeler_hazirla 	= new kelimeleriHazirla($kelimelik->kalip_icin_temel_gruplar);
+		$kelimeler_arr		= $kelimeler_hazirla->kalip_icin_temel_gruplar;
+		$kurallari_uygula 	= new kurallariUygula($kelimeler_arr);
 		exit();
 	}
 
@@ -321,13 +321,11 @@ class kelimelik
 }
 
 
-
-
 ////////////////////////////VERİ ÇEKME SINIFI /////////////////
 
 class kelimeleriHazirla{
 	var $db;
-	var $sonuc_arr = array();
+	var $kalip_icin_temel_gruplar;
 	/**
 	 * @param $kalip_icin_temel_gruplar
 	 */
@@ -339,16 +337,14 @@ class kelimeleriHazirla{
 
 	function getKelimeler($kalip_icin_temel_gruplar){
 		$kelimeler_arr = [];
-		foreach ($kalip_icin_temel_gruplar as $kalip) {
+		foreach ($kalip_icin_temel_gruplar as $key=>$kalip) {
 			$regex      = $kalip['regex'];
 			$sql        = "SELECT HEAD_MULT FROM kelimeler WHERE HEAD_MULT REGEXP '$regex'";
-			$kelimeler_arr[]      = $this->db->get_results($sql);
+			$kalip_icin_temel_gruplar[$key]['kelimeler']      = $this->db->get_results($sql);
 		}
-		$this->sonuc_arr = $kelimeler_arr ;
+		$this->kalip_icin_temel_gruplar =  $kalip_icin_temel_gruplar;
 	}
 }
-
-
 
 
 
