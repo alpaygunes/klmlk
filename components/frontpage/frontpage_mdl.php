@@ -241,6 +241,7 @@ class kelimelik
 			foreach ( $temel_grup['kalip'] as $key1=>$harf ) {
 				if($harf!=''){
 					$item_dolu = true;
+					$this->kalip_icin_temel_gruplar[$key0]['harfler'] = implode('',$temel_grup['kalip']);
 				}
 			}
 			if(!$item_dolu){
@@ -363,8 +364,22 @@ class kurallariUygula{
 		foreach($kalip_icin_temel_gruplar as $key0=>$grup_arr){
 			$kelimeler      = $grup_arr['kelimeler'];
 			foreach($kelimeler as $key1=>$kelime){
-				$kelime     = implode('',$kelime);
+				$bulunan_kelime_arr     = $this->str_split_unicode($kelime->HEAD_MULT);
+				$harfler				= $this->eldeki_harfler.$grup_arr['harfler'];
+				$eldeki_harfler_arr		= $this->str_split_unicode($harfler);
 			}
 		}
+	}
+
+	function str_split_unicode($str, $l = 0) {
+		if ($l > 0) {
+			$ret = array();
+			$len = mb_strlen($str, "UTF-8");
+			for ($i = 0; $i < $len; $i += $l) {
+				$ret[] = mb_substr($str, $i, $l, "UTF-8");
+			}
+			return $ret;
+		}
+		return preg_split("//u", $str, -1, PREG_SPLIT_NO_EMPTY);
 	}
 }
