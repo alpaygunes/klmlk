@@ -59,18 +59,19 @@ $kart .= "</table>\n";
 				$('.fa-spin').remove();
 			},
 			success: function(json) {
+				console.log(json)
 				$('.sonuc').empty();
 				$.each(json, function( index, value ) {
 					//$('.sonuc').append(value+"--------"+index+"<br>")
-					$.each(value[1], function( index, deger ) {
+					$.each(value['kalip'], function( index, deger ) {
 						if(deger==''){
-							value[1][index]="*"
+							value['kalip'][index]="*"
 						}
 					});
-					$('.sonuc').append("Normal Kalıp : "+value[1]+"<br>")
+					$('.sonuc').append("Normal Kalıp : "+value['kalip']+"<br>")
 					$('.sonuc').append("Regex kalıp : "+value['regex']+"<br>")
-					$('.sonuc').append(""+value[0][0]+"-")
-					$('.sonuc').append(value[0][1]+"<br>")
+					$('.sonuc').append(""+value['konum'][0]+"-")
+					$('.sonuc').append(value['konum'][1]+"<br>")
 					$('.sonuc').append("<br><br>")
 				});
 			},

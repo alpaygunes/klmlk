@@ -9,8 +9,8 @@ class frontpage_mdl extends BaseModel{
 		$eldeki_harfler 	= $_POST['eldeki_harfler'];
 		$kelimelik 			= new kelimelik($kart,$eldeki_harfler);
 		$kelimeler_hazirla 	= new kelimeleriHazirla($kelimelik->kalip_icin_temel_gruplar);
-		$kelimeler_arr		= $kelimeler_hazirla->kalip_icin_temel_gruplar;
-		$kurallari_uygula 	= new kurallariUygula($kelimeler_arr);
+		$kalip_icin_temel_gruplar	= $kelimeler_hazirla->kalip_icin_temel_gruplar;
+		$kurallari_uygula 	= new kurallariUygula($kalip_icin_temel_gruplar,$eldeki_harfler);
 		exit();
 	}
 
@@ -79,11 +79,11 @@ class kelimelik
 					continue;
 				} else {
 					$konum 									= array(count($satir_arr) - ($key + 1)+$this->x,$this->y);
-					$this->kalip_icin_temel_gruplar[] 		= array($konum,array_slice($satir_arr, count($satir_arr) - ($key + 1), $key + 1));
+					$this->kalip_icin_temel_gruplar[] 		= array("konum"=>$konum,"kalip"=>array_slice($satir_arr, count($satir_arr) - ($key + 1), $key + 1));
 				}
 			} else {
 				$konum									=  array(count($satir_arr) - ($key + 1)+$this->x,$this->y);
-				$this->kalip_icin_temel_gruplar[] 		=  array($konum,array_slice($satir_arr, count($satir_arr) - ($key + 1), $key + 1));
+				$this->kalip_icin_temel_gruplar[] 		=  array("konum"=>$konum,"kalip"=>array_slice($satir_arr, count($satir_arr) - ($key + 1), $key + 1));
 			}
 
 		}
@@ -97,11 +97,11 @@ class kelimelik
 					continue;
 				} else {
 					$konum								= array($this->x,$this->y);
-					$this->kalip_icin_temel_gruplar[] 	= array($konum,array_slice($satir_arr, 0, $key + 1));
+					$this->kalip_icin_temel_gruplar[] 	= array("konum"=>$konum,"kalip"=>array_slice($satir_arr, 0, $key + 1));
 				}
 			} else {
 				$konum									= array($this->x,$this->y);
-				$this->kalip_icin_temel_gruplar[] 		= array($konum,array_slice($satir_arr, 0, $key + 1));
+				$this->kalip_icin_temel_gruplar[] 		= array("konum"=>$konum,"kalip"=>array_slice($satir_arr, 0, $key + 1));
 			}
 		}
 	}
@@ -158,7 +158,7 @@ class kelimelik
 		}
 		$kirpilmis_alt_satir 					= array_slice($basi_sonu_temiz_satir, $ilk_kirpma_konumu, $son_kirpma_konumu-$ilk_kirpma_konumu);
 		$konum 									= array($this->x,$this->y);
-		$this->kalip_icin_temel_gruplar[] 		= array($konum,$kirpilmis_alt_satir);
+		$this->kalip_icin_temel_gruplar[] 		= array("konum"=>$konum,"kalip"=>$kirpilmis_alt_satir);
 		$this->coz($kirpilmis_alt_satir);
 	}
 
@@ -193,27 +193,27 @@ class kelimelik
 	function tekrarEdenKaliplariTemizle(){
 		$temel_kaliplar_arr = $this->kalip_icin_temel_gruplar;
 		foreach ( $temel_kaliplar_arr as $key=>$temel_grup ) {
-			if($temel_grup[1][0]==''){
-				array_shift($temel_grup[1]);
-				$this->aynisiVarsaKalibiSil($temel_grup[1]);
+			if($temel_grup['kalip'][0]==''){
+				array_shift($temel_grup['kalip']);
+				$this->aynisiVarsaKalibiSil($temel_grup['kalip']);
 			}
 		}
 		$temel_kaliplar_arr = $this->kalip_icin_temel_gruplar;
 		foreach ( $temel_kaliplar_arr as $key=>$temel_grup ) {
-			if($temel_grup[1][count($temel_grup[1])]==''){
-				array_pop($temel_grup[1]);
-				$this->aynisiVarsaKalibiSil($temel_grup[1]);
+			if($temel_grup['kalip'][count($temel_grup['kalip'])]==''){
+				array_pop($temel_grup['kalip']);
+				$this->aynisiVarsaKalibiSil($temel_grup['kalip']);
 			}
 		}
 		$temel_kaliplar_arr = $this->kalip_icin_temel_gruplar;
 		foreach ( $temel_kaliplar_arr as $key=>$temel_grup ) {
-			if($temel_grup[1][count($temel_grup[1])]==''){
-				array_pop($temel_grup[1]);
+			if($temel_grup['kalip'][count($temel_grup['kalip'])]==''){
+				array_pop($temel_grup['kalip']);
 			}
-			if($temel_grup[1][0]==''){
-				array_shift($temel_grup[1]);
+			if($temel_grup['kalip'][0]==''){
+				array_shift($temel_grup['kalip']);
 			}
-			$this->aynisiVarsaKalibiSil($temel_grup[1]);
+			$this->aynisiVarsaKalibiSil($temel_grup['kalip']);
 		}
 
 
@@ -225,7 +225,7 @@ class kelimelik
 	function aynisiVarsaKalibiSil($kontrol_icin_arr){
 		$temel_kaliplar_arr = $this->kalip_icin_temel_gruplar;
 		foreach ( $temel_kaliplar_arr as $key=>$temel_grup ) {
-			if($temel_grup[1]==$kontrol_icin_arr){
+			if($temel_grup['kalip']==$kontrol_icin_arr){
 				unset($this->kalip_icin_temel_gruplar[$key]);
 			}
 		}
@@ -238,7 +238,7 @@ class kelimelik
 		$temel_kaliplar_arr = $this->kalip_icin_temel_gruplar;
 		foreach ( $temel_kaliplar_arr as $key0=>$temel_grup ) {
 			$item_dolu = false;
-			foreach ( $temel_grup[1] as $key1=>$harf ) {
+			foreach ( $temel_grup['kalip'] as $key1=>$harf ) {
 				if($harf!=''){
 					$item_dolu = true;
 				}
@@ -255,7 +255,7 @@ class kelimelik
 	function uzunKaliplariTemizle(){
 		$temel_kaliplar_arr = $this->kalip_icin_temel_gruplar;
 		foreach ( $temel_kaliplar_arr as $key0=>$temel_grup ) {
-			$basi_sonu_temiz_satir  = $this->trimFirstLast($temel_grup[1])[0];
+			$basi_sonu_temiz_satir  = $this->trimFirstLast($temel_grup['kalip'])[0];
 			$dolu_item_sayisi       = $this->doluItemSayisi($basi_sonu_temiz_satir);
 			$kalip_boyu             = count($basi_sonu_temiz_satir);
 			$bos_alan               = $kalip_boyu - $dolu_item_sayisi;
@@ -291,7 +291,7 @@ class kelimelik
 		// önce baştaki kalıbı  oluştur
 		$temel_kaliplar_arr = $this->kalip_icin_temel_gruplar;
 		foreach ( $temel_kaliplar_arr as $key0=>$temel_grup ) {
-			foreach ( $temel_grup[1] as $key1=>$harf ) {
+			foreach ( $temel_grup['kalip'] as $key1=>$harf ) {
 				if($harf==''){
 					$max++;
 				}else{
@@ -338,7 +338,7 @@ class kelimeleriHazirla{
 	function getKelimeler($kalip_icin_temel_gruplar){
 		$kelimeler_arr = [];
 		foreach ($kalip_icin_temel_gruplar as $key=>$kalip) {
-			$regex      = $kalip['regex'];
+			$regex      = '^'.$kalip['regex'].'$';
 			$sql        = "SELECT HEAD_MULT FROM kelimeler WHERE HEAD_MULT REGEXP '$regex'";
 			$kalip_icin_temel_gruplar[$key]['kelimeler']      = $this->db->get_results($sql);
 		}
@@ -351,5 +351,20 @@ class kelimeleriHazirla{
 // //////////////////////////////// KURALLARI UYGULA ///////////////////////
 
 class kurallariUygula{
+	var $kalip_icin_temel_gruplar,$eldeki_harfler;
+	function kurallariUygula($kalip_icin_temel_gruplar,$eldeki_harfler){
+		$this->kalip_icin_temel_gruplar     =   $kalip_icin_temel_gruplar;
+		$this->eldeki_harfler               = $eldeki_harfler;
+		$this->kural_01_harfler_yeterlimi();
+	}
 
+	function kural_01_harfler_yeterlimi(){
+		$kalip_icin_temel_gruplar = $this->kalip_icin_temel_gruplar;
+		foreach($kalip_icin_temel_gruplar as $key0=>$grup_arr){
+			$kelimeler      = $grup_arr['kelimeler'];
+			foreach($kelimeler as $key1=>$kelime){
+				$kelime     = implode('',$kelime);
+			}
+		}
+	}
 }
