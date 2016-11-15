@@ -69,10 +69,16 @@ $kart .= "</table>\n";
 						}
 					});
 					$('.sonuc').append("Normal Kalıp : "+value['kalip']+"<br>")
-					$('.sonuc').append("Regex kalıp : "+value['regex']+"<br>")
-					$('.sonuc').append(""+value['konum'][0]+"-")
-					$('.sonuc').append(value['konum'][1]+"<br>")
-					$('.sonuc').append("<br><br>")
+					$('.sonuc').append("Regex kalıp : " + value['regex']+"<br>")
+					if(value['kelimeler']!=null){
+						$.each(value['kelimeler'], function( index, deger ) {
+							$('.sonuc').append(" ---- Kelimeler : " + deger['HEAD_MULT']+"<br>")
+						});
+					}
+
+					//$('.sonuc').append(""+value['konum'][0]+"-")
+					//$('.sonuc').append(value['konum'][1]+"<br>")
+					//$('.sonuc').append("<br><br>")
 				});
 			},
 			error: function(xhr, ajaxOptions, thrownError) {
