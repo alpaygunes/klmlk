@@ -429,17 +429,26 @@ class kurallariUygula{
 			}
 		}
 
-		$eslesen_harf_sayisi0 = 0;
-		$eslesen_harf_sayisi1 = 0;
-		for($i=0;$i<$ilk_harf_konumu-1;$i++){
+		$tara						= true;
+		$eslesen_harf_sayisi_ilk_copy=0;
+		$eslesen_harf_sayisi_son=0;
+		while($tara){
+			$eslesen_harf_sayisi_ilk=0;
+			$a=0;
 			foreach ($bulunan_kelime_arr as $key1 => $harf) {
 				if($harf==$kalip_arr[$key1]){
-					$eslesen_harf_sayisi0++;
+					$a++;
+					$eslesen_harf_sayisi_ilk = $a;
 				}
 			}
-			if($eslesen_harf_sayisi1<=$eslesen_harf_sayisi0){
+			if($eslesen_harf_sayisi_ilk>=$eslesen_harf_sayisi_son){
 				array_unshift($bulunan_kelime_arr,'');
-				$eslesen_harf_sayisi1 = $eslesen_harf_sayisi0;
+				$eslesen_harf_sayisi_son = $eslesen_harf_sayisi_ilk ;
+			}
+
+			if($eslesen_harf_sayisi_ilk<$eslesen_harf_sayisi_son){
+				$tara	= false;
+				array_shift($bulunan_kelime_arr);
 			}
 		}
 		return $bulunan_kelime_arr;
