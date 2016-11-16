@@ -27,7 +27,7 @@ class kelimelik
 {
 	var $kalip_icin_temel_gruplar = array();
 	var $regexler_arr=array();
-	var $x=1;
+	var $x=0;
 	var $y=0;
 	var $eldeki_harfler;
 
@@ -42,6 +42,7 @@ class kelimelik
 		#baştan sona sondan başa full tarama
 		foreach ($kart as $key=>$satir_arr) {
 			$this->y=$key;
+			$this->x=0;
 			$this->coz($satir_arr);
 		}
 
@@ -78,11 +79,11 @@ class kelimelik
 					#öncesinde hafr var ise. Bu bir harf grubudur. sıradakine geç
 					continue;
 				} else {
-					$konum 									= array(count($satir_arr) - ($key + 1)+$this->x,$this->y);
+					$konum 									= array("sutun"=>count($satir_arr) - ($key+1)+$this->x,"satir"=>$this->y);
 					$this->kalip_icin_temel_gruplar[] 		= array("konum"=>$konum,"kalip"=>array_slice($satir_arr, count($satir_arr) - ($key + 1), $key + 1));
 				}
 			} else {
-				$konum									=  array(count($satir_arr) - ($key + 1)+$this->x,$this->y);
+				$konum									=  array("sutun"=>count($satir_arr) - ($key+1)+$this->x,"satir"=>$this->y);
 				$this->kalip_icin_temel_gruplar[] 		=  array("konum"=>$konum,"kalip"=>array_slice($satir_arr, count($satir_arr) - ($key + 1), $key + 1));
 			}
 
@@ -96,11 +97,11 @@ class kelimelik
 					#sonrasında harf var ise. Bu bir harf grubudur. sıradakine geç
 					continue;
 				} else {
-					$konum								= array($this->x,$this->y);
+					$konum								= array("sutun"=>$this->x,"satir"=>$this->y);
 					$this->kalip_icin_temel_gruplar[] 	= array("konum"=>$konum,"kalip"=>array_slice($satir_arr, 0, $key + 1));
 				}
 			} else {
-				$konum									= array($this->x,$this->y);
+				$konum									= array("sutun"=>$this->x,"satir"=>$this->y);
 				$this->kalip_icin_temel_gruplar[] 		= array("konum"=>$konum,"kalip"=>array_slice($satir_arr, 0, $key + 1));
 			}
 		}
@@ -157,7 +158,7 @@ class kelimelik
 			return;
 		}
 		$kirpilmis_alt_satir 					= array_slice($basi_sonu_temiz_satir, $ilk_kirpma_konumu, $son_kirpma_konumu-$ilk_kirpma_konumu);
-		$konum 									= array($this->x,$this->y);
+		$konum 									= array("sutun"=>$this->x,"satir"=>$this->y);
 		$this->kalip_icin_temel_gruplar[] 		= array("konum"=>$konum,"kalip"=>$kirpilmis_alt_satir);
 		$this->coz($kirpilmis_alt_satir);
 	}
@@ -195,14 +196,14 @@ class kelimelik
 		foreach ( $temel_kaliplar_arr as $key=>$temel_grup ) {
 			if($temel_grup['kalip'][0]==''){
 				array_shift($temel_grup['kalip']);
-				$this->aynisiVarsaKalibiSil($temel_grup['kalip']);
+				$this->aynisiVarsaKalibiSil($temel_grup['kalip'],$temel_grup['konum']['satir']);
 			}
 		}
 		$temel_kaliplar_arr = $this->kalip_icin_temel_gruplar;
 		foreach ( $temel_kaliplar_arr as $key=>$temel_grup ) {
 			if($temel_grup['kalip'][count($temel_grup['kalip'])]==''){
 				array_pop($temel_grup['kalip']);
-				$this->aynisiVarsaKalibiSil($temel_grup['kalip']);
+				$this->aynisiVarsaKalibiSil($temel_grup['kalip'],$temel_grup['konum']['satir']);
 			}
 		}
 		$temel_kaliplar_arr = $this->kalip_icin_temel_gruplar;
@@ -213,7 +214,7 @@ class kelimelik
 			if($temel_grup['kalip'][0]==''){
 				array_shift($temel_grup['kalip']);
 			}
-			$this->aynisiVarsaKalibiSil($temel_grup['kalip']);
+			$this->aynisiVarsaKalibiSil($temel_grup['kalip'],$temel_grup['konum']['satir']);
 		}
 
 
@@ -222,11 +223,13 @@ class kelimelik
 	/**
 	 * @param $kontrol_icin_arr
 	 */
-	function aynisiVarsaKalibiSil($kontrol_icin_arr){
+	function aynisiVarsaKalibiSil($kontrol_icin_arr,$satir){
 		$temel_kaliplar_arr = $this->kalip_icin_temel_gruplar;
 		foreach ( $temel_kaliplar_arr as $key=>$temel_grup ) {
 			if($temel_grup['kalip']==$kontrol_icin_arr){
-				unset($this->kalip_icin_temel_gruplar[$key]);
+				if($temel_grup['konum']['satir']==$satir){
+					unset($this->kalip_icin_temel_gruplar[$key]);
+				}
 			}
 		}
 	}
@@ -359,6 +362,7 @@ class kurallariUygula{
 		$this->kalip_icin_temel_gruplar     =   $kalip_icin_temel_gruplar;
 		$this->eldeki_harfler               = $eldeki_harfler;
 		$this->kural_01_harfler_yeterlimi();
+		$this->kural_02_yenikelimeler_sozlukte_varmi();
 	}
 
 	function str_split_unicode($str, $l = 0) {
@@ -396,5 +400,48 @@ class kurallariUygula{
 				}
 			}
 		}
+	}
+
+
+	function kural_02_yenikelimeler_sozlukte_varmi(){
+		$kart = $_POST['kart'];
+		$kalip_icin_temel_gruplar_copy = $this->kalip_icin_temel_gruplar;
+		foreach($kalip_icin_temel_gruplar_copy as $key0=>$grup_arr) {
+			$kelimeler  = $grup_arr['kelimeler'];
+			$satir      = $grup_arr['konum']['satir'];
+			$sutun      = $grup_arr['konum']['sutun'];
+			$kalip_arr  = $grup_arr['kalip'];
+			foreach ($kelimeler as $key1 => $kelime) {
+				$bulunan_kelime_arr         = $this->str_split_unicode(strtolower($kelime->HEAD_MULT));
+				$fark                       = $this->kalibaOturmaKonumu($kalip_arr,$bulunan_kelime_arr);
+				$fark_sayisi                = count($fark);
+			}
+		}
+	}
+
+	function kalibaOturmaKonumu($kalip_arr,$bulunan_kelime_arr){
+		// ilk harfin konumunu bulalaım
+		$ilk_harf_konumu = 0;
+		foreach ($kalip_arr as $key => $harf) {
+			if ($harf) {
+				$ilk_harf_konumu = $key;
+				break;
+			}
+		}
+
+		$eslesen_harf_sayisi0 = 0;
+		$eslesen_harf_sayisi1 = 0;
+		for($i=0;$i<$ilk_harf_konumu-1;$i++){
+			foreach ($bulunan_kelime_arr as $key1 => $harf) {
+				if($harf==$kalip_arr[$key1]){
+					$eslesen_harf_sayisi0++;
+				}
+			}
+			if($eslesen_harf_sayisi1<=$eslesen_harf_sayisi0){
+				array_unshift($bulunan_kelime_arr,'');
+				$eslesen_harf_sayisi1 = $eslesen_harf_sayisi0;
+			}
+		}
+		return $bulunan_kelime_arr;
 	}
 }
