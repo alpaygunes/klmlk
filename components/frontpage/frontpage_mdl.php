@@ -420,17 +420,7 @@ class kurallariUygula{
 	}
 
 	function kalibaOturmaKonumu($kalip_arr,$bulunan_kelime_arr){
-		// ilk harfin konumunu bulalaım
-		$ilk_harf_konumu = 0;
-		foreach ($kalip_arr as $key => $harf) {
-			if ($harf) {
-				$ilk_harf_konumu = $key;
-				break;
-			}
-		}
-
 		$tara						= true;
-		$eslesen_harf_sayisi_ilk_copy=0;
 		$eslesen_harf_sayisi_son=0;
 		while($tara){
 			$eslesen_harf_sayisi_ilk=0;
