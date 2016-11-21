@@ -1,65 +1,3 @@
-
-İleti dizisi açıldı. 1 okunmuş ileti.
-
-İçeriğe atla
-Gmail ürününü ekran okuyucularla birlikte kullanma
-30
-Arama
-
-
-
-Gmail
-E-POSTA YAZ
-Etiketler
-Gelen Kutusu
-Yıldızlı
-Önemli
-Gönderilmiş Postalar
-Taslaklar
-Tüm Postalar
-Spam
-Çöp Kutusu
-Çevreler
-agunes@meb.gov.tr
-ARŞİVİM
-EBİTEFÖ LER
-Hotmail(alp_gun)
-Hotmail(alpaygunes)
-Notes
-Diğer
-Hangouts
-
-
-
-
-Diğer
-2 / 3
-
-Yazdır Yeni pencerede
-(konu yok)
-Gelen Kutusu
-x
-
-Alpay GÜNEŞ <alpaygunes@gmail.com>
-Ekler15:46 (4 saat önce)
-
-Alıcı: bana
-
-Ek alanı
-
-Yanıtla veya Yönlendir
-17 GB'lık kotanın 1,31 GB'ı (%7) kullanılıyor
-Yönet
-Şartlar - Gizlilik
-Son hesap etkinliği: 1 saat önce
-Ayrıntılar
-alpay.gunes@gmail.com adlı kullanıcının profil fotoğrafı
-alpay.gunes@gmail.com
-Kimya Öğretmenliği
-
-Ayrıntıları göster
-
-
 <?php
 class frontpage_mdl extends BaseModel{
 	function __construct($parent){
@@ -485,7 +423,10 @@ class kurallariUygula{
 						if($kalip_arr[$key3]==''){
 							// harfin olduğu kaılıbın boş olduğu yer yeni harf vardır altına üstüne bakılacak
 							$sutun = $sutun+$key3;
-							$this->olusanYeniKelimeSozlukteVarmi($sutun,$satir,$harf);
+							$varmi = $this->olusanYeniKelimeSozlukteVarmi($sutun,$satir,$harf,$kart);
+							if(!$varmi){
+								//yoksa dizinden çıkart  (kalip_icin_temel_gruplar)
+							}
 						}
 					}
 				}
@@ -493,8 +434,11 @@ class kurallariUygula{
 		}
 	}
 
-	function olusanYeniKelimeSozlukteVarmi(){
+	function olusanYeniKelimeSozlukteVarmi($sutun,$satir,$harf,$kart){
+		//altı üstü boşsa false dönder
+		if($kart){
 
+		}
 	}
 
 	function kalibaOturmaKonumu($kalip_arr,$bulunan_kelime_arr){
