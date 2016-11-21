@@ -1,3 +1,65 @@
+
+İleti dizisi açıldı. 1 okunmuş ileti.
+
+İçeriğe atla
+Gmail ürününü ekran okuyucularla birlikte kullanma
+30
+Arama
+
+
+
+Gmail
+E-POSTA YAZ
+Etiketler
+Gelen Kutusu
+Yıldızlı
+Önemli
+Gönderilmiş Postalar
+Taslaklar
+Tüm Postalar
+Spam
+Çöp Kutusu
+Çevreler
+agunes@meb.gov.tr
+ARŞİVİM
+EBİTEFÖ LER
+Hotmail(alp_gun)
+Hotmail(alpaygunes)
+Notes
+Diğer
+Hangouts
+
+
+
+
+Diğer
+2 / 3
+
+Yazdır Yeni pencerede
+(konu yok)
+Gelen Kutusu
+x
+
+Alpay GÜNEŞ <alpaygunes@gmail.com>
+Ekler15:46 (4 saat önce)
+
+Alıcı: bana
+
+Ek alanı
+
+Yanıtla veya Yönlendir
+17 GB'lık kotanın 1,31 GB'ı (%7) kullanılıyor
+Yönet
+Şartlar - Gizlilik
+Son hesap etkinliği: 1 saat önce
+Ayrıntılar
+alpay.gunes@gmail.com adlı kullanıcının profil fotoğrafı
+alpay.gunes@gmail.com
+Kimya Öğretmenliği
+
+Ayrıntıları göster
+
+
 <?php
 class frontpage_mdl extends BaseModel{
 	function __construct($parent){
@@ -389,10 +451,10 @@ class kurallariUygula{
 				$eldeki_harfler_arr_copy = $eldeki_harfler_arr;
 				foreach($eldeki_harfler_arr_copy as $key2=>$harf){
 					//if(in_array($harf,$eldeki_harfler_arr_copy)){
-						if(($key3 = array_search(strtolower($harf), $bulunan_kelime_arr)) !== false) {
-							unset($eldeki_harfler_arr[$key2]);
-							unset($bulunan_kelime_arr[$key3]);
-						}
+					if(($key3 = array_search(strtolower($harf), $bulunan_kelime_arr)) !== false) {
+						unset($eldeki_harfler_arr[$key2]);
+						unset($bulunan_kelime_arr[$key3]);
+					}
 					//}
 				}
 				if(count($bulunan_kelime_arr)){
@@ -403,6 +465,9 @@ class kurallariUygula{
 	}
 
 
+	/**
+	 *
+	 */
 	function kural_02_yenikelimeler_sozlukte_varmi(){
 		$kart = $_POST['kart'];
 		$kalip_icin_temel_gruplar_copy = $this->kalip_icin_temel_gruplar;
@@ -413,10 +478,23 @@ class kurallariUygula{
 			$kalip_arr  = $grup_arr['kalip'];
 			foreach ($kelimeler as $key1 => $kelime) {
 				$bulunan_kelime_arr         = $this->str_split_unicode(strtolower($kelime->HEAD_MULT));
-				$fark                       = $this->kalibaOturmaKonumu($kalip_arr,$bulunan_kelime_arr);
-				$fark_sayisi                = count($fark);
+				$kaliba_oturmus_arr        = $this->kalibaOturmaKonumu($kalip_arr,$bulunan_kelime_arr);
+				$this->kalip_icin_temel_gruplar[$key0]['kelimeler'][$key1]->kaliba_oturmus_hali=$kaliba_oturmus_arr;
+				foreach($kaliba_oturmus_arr as $key3=>$harf){
+					if($harf){
+						if($kalip_arr[$key3]==''){
+							// harfin olduğu kaılıbın boş olduğu yer yeni harf vardır altına üstüne bakılacak
+							$sutun = $sutun+$key3;
+							$this->olusanYeniKelimeSozlukteVarmi($sutun,$satir,$harf);
+						}
+					}
+				}
 			}
 		}
+	}
+
+	function olusanYeniKelimeSozlukteVarmi(){
+
 	}
 
 	function kalibaOturmaKonumu($kalip_arr,$bulunan_kelime_arr){
@@ -431,10 +509,15 @@ class kurallariUygula{
 					$eslesen_harf_sayisi_ilk = $a;
 				}
 			}
-			if($eslesen_harf_sayisi_ilk>=$eslesen_harf_sayisi_son){
-				array_unshift($bulunan_kelime_arr,'');
-				$eslesen_harf_sayisi_son = $eslesen_harf_sayisi_ilk ;
+			if(count($bulunan_kelime_arr)==count($kalip_arr)){
+				$tara	= false;
+			}else{
+				if($eslesen_harf_sayisi_ilk>=$eslesen_harf_sayisi_son){
+					array_unshift($bulunan_kelime_arr,'');
+					$eslesen_harf_sayisi_son = $eslesen_harf_sayisi_ilk ;
+				}
 			}
+
 
 			if($eslesen_harf_sayisi_ilk<$eslesen_harf_sayisi_son){
 				$tara	= false;
