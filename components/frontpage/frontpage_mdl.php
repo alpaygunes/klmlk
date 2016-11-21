@@ -411,8 +411,6 @@ class kurallariUygula{
 		$kalip_icin_temel_gruplar_copy = $this->kalip_icin_temel_gruplar;
 		foreach($kalip_icin_temel_gruplar_copy as $key0=>$grup_arr) {
 			$kelimeler  = $grup_arr['kelimeler'];
-			$satir      = $grup_arr['konum']['satir'];
-			$sutun      = $grup_arr['konum']['sutun'];
 			$kalip_arr  = $grup_arr['kalip'];
 			foreach ($kelimeler as $key1 => $kelime) {
 				$bulunan_kelime_arr         = $this->str_split_unicode(strtolower($kelime->HEAD_MULT));
@@ -422,8 +420,8 @@ class kurallariUygula{
 					if($harf){
 						if($kalip_arr[$key3]==''){
 							// harfin olduğu kaılıbın boş olduğu yer yeni harf vardır altına üstüne bakılacak
-							$sutun = $sutun+$key3;
-							$varmi = $this->olusanYeniKelimeSozlukteVarmi($sutun,$satir,$harf,$kart);
+							$sutun = $grup_arr['konum']['sutun']+$key3;
+							$varmi = $this->olusanYeniKelimeSozlukteVarmi($sutun,$grup_arr['konum']['satir'],$harf,$kart);
 							if(!$varmi){
 								//yoksa dizinden çıkart  (kalip_icin_temel_gruplar)
 							}
@@ -436,7 +434,7 @@ class kurallariUygula{
 
 	function olusanYeniKelimeSozlukteVarmi($sutun,$satir,$harf,$kart){
 		//altı üstü boşsa false dönder
-		if($kart){
+		if($kart[$satir][$sutun]){
 
 		}
 	}
