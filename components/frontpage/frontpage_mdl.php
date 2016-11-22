@@ -418,9 +418,15 @@ class kurallariUygula{
 				$this->kalip_icin_temel_gruplar[$key0]['kelimeler'][$key1]->kaliba_oturmus_hali=$kaliba_oturmus_arr;
 				foreach($kaliba_oturmus_arr as $key3=>$harf){
 					if($harf){
+						foreach($kalip_arr as $key4=>$harf1){
+							if($harf1){
+								$ilk_dolu_konum = $key4;
+								break;
+							}
+						}
 						if($kalip_arr[$key3]==''){
 							// harfin olduğu kaılıbın boş olduğu yer yeni harf vardır altına üstüne bakılacak
-							$sutun = $grup_arr['konum']['sutun']+$key3;
+							$sutun = $grup_arr['konum']['sutun']+$ilk_dolu_konum;
 							$varmi = $this->olusanYeniKelimeSozlukteVarmi($sutun,$grup_arr['konum']['satir'],$harf,$kart);
 							if(!$varmi){
 								//yoksa dizinden çıkart  (kalip_icin_temel_gruplar)
@@ -437,9 +443,44 @@ class kurallariUygula{
 
 
 	function olusanYeniKelimeSozlukteVarmi($sutun,$satir,$harf,$kart){
+		if($sutun==1 && $satir<=3){
+			$stop=0;
+		}
+		$ust_satir=$alt_satir=$satir;
+		$ust_parca  = '';
+		$alt_parca  = '';
+		$ust_bitti  = false;
+		$alt_bitti  = false;
 		//altı üstü boşsa false dönder
-		if($kart[$satir][$sutun]){
+		$yeni_kelime='';
+		$aralik = 1;
+		while(!$yeni_kelime){
+			$aralik++;
+			$ust_satir = $ust_satir-$aralik;
+			$alt_satir = $alt_satir+$aralik;
+			//üst tarafda harf varmi
+			if(isset($kart[$ust_satir][$sutun]) && $kart[$ust_satir][$sutun]!=''){
+				$ust_parca = $kart[$ust_satir][$sutun].$ust_parca;
 
+			}else{
+				$ust_bitti = true;
+			}
+			//alt tarafta varmı
+			if(isset($kart[$alt_satir][$sutun]) && $kart[$alt_satir][$sutun]!=''){
+				$alt_parca = $kart[$alt_satir][$sutun].$alt_parca;
+			}else{
+				$alt_bitti = true;
+			}
+
+			if($alt_bitti && $ust_bitti){
+				$yeni_kelime = $ust_parca . $harf . $alt_parca;
+				if(strlen($yeni_kelime)){
+					return $yeni_kelime;
+				}
+				return $yeni_kelime;
+				//dönmemeli
+				//veritabanında bakmalı bu kelime tabloda varmı
+			}
 		}
 	}
 
