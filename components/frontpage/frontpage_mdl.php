@@ -433,6 +433,9 @@ class kurallariUygula{
 	}
 
 
+
+
+
 	function olusanYeniKelimeSozlukteVarmi($sutun,$satir,$harf,$kart){
 		//altı üstü boşsa false dönder
 		if($kart[$satir][$sutun]){
