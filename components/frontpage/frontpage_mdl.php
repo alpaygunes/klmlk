@@ -407,6 +407,7 @@ class kurallariUygula{
 	 *
 	 */
 	function kural_02_yenikelimeler_sozlukte_varmi(){
+		global $db;
 		$kart = $_POST['kart'];
 		$kalip_icin_temel_gruplar_copy = $this->kalip_icin_temel_gruplar;
 		foreach($kalip_icin_temel_gruplar_copy as $key0=>$grup_arr) {
@@ -418,18 +419,16 @@ class kurallariUygula{
 				$this->kalip_icin_temel_gruplar[$key0]['kelimeler'][$key1]->kaliba_oturmus_hali=$kaliba_oturmus_arr;
 				foreach($kaliba_oturmus_arr as $key3=>$harf){
 					if($harf){
-						foreach($kalip_arr as $key4=>$harf1){
-							if($harf1){
-								$ilk_dolu_konum = $key4;
-								break;
-							}
-						}
+						$harfin_konumu = $key3;
 						if($kalip_arr[$key3]==''){
 							// harfin olduğu kaılıbın boş olduğu yer yeni harf vardır altına üstüne bakılacak
-							$sutun = $grup_arr['konum']['sutun']+$ilk_dolu_konum;
-							$varmi = $this->olusanYeniKelimeSozlukteVarmi($sutun,$grup_arr['konum']['satir'],$harf,$kart);
-							if(!$varmi){
-								//yoksa dizinden çıkart  (kalip_icin_temel_gruplar)
+							$sutun = $grup_arr['konum']['sutun']+$harfin_konumu;
+							$yeni_kelime = $this->olusanYeniKelime($sutun,$grup_arr['konum']['satir'],$harf,$kart);
+							if($yeni_kelime){
+								$sql        = "SELECT HEAD_MULT FROM kelimeler WHERE HEAD_MULT = '$yeni_kelime'";
+								if(!count($db->get_results($sql))){
+									unset($this->kalip_icin_temel_gruplar[$key0]['kelimeler'][$key1]);
+								}
 							}
 						}
 					}
@@ -442,8 +441,8 @@ class kurallariUygula{
 
 
 
-	function olusanYeniKelimeSozlukteVarmi($sutun,$satir,$harf,$kart){
-		if($sutun==1 && $satir<=3){
+	function olusanYeniKelime($sutun,$satir,$harf,$kart){
+		if($sutun<3 && $satir>0){
 			$stop=0;
 		}
 		$ust_satir=$alt_satir=$satir;
@@ -453,11 +452,11 @@ class kurallariUygula{
 		$alt_bitti  = false;
 		//altı üstü boşsa false dönder
 		$yeni_kelime='';
-		$aralik = 1;
+		$aralik = 0;
 		while(!$yeni_kelime){
 			$aralik++;
-			$ust_satir = $ust_satir-$aralik;
-			$alt_satir = $alt_satir+$aralik;
+			$ust_satir = $satir-$aralik;
+			$alt_satir = $satir+$aralik;
 			//üst tarafda harf varmi
 			if(isset($kart[$ust_satir][$sutun]) && $kart[$ust_satir][$sutun]!=''){
 				$ust_parca = $kart[$ust_satir][$sutun].$ust_parca;
@@ -467,7 +466,7 @@ class kurallariUygula{
 			}
 			//alt tarafta varmı
 			if(isset($kart[$alt_satir][$sutun]) && $kart[$alt_satir][$sutun]!=''){
-				$alt_parca = $kart[$alt_satir][$sutun].$alt_parca;
+				$alt_parca = $alt_parca.$kart[$alt_satir][$sutun];
 			}else{
 				$alt_bitti = true;
 			}
@@ -486,31 +485,28 @@ class kurallariUygula{
 
 	function kalibaOturmaKonumu($kalip_arr,$bulunan_kelime_arr){
 		$tara						= true;
-		$eslesen_harf_sayisi_son=0;
+		$eslesen_harf_sayisi_onceki=0;
 		while($tara){
-			$eslesen_harf_sayisi_ilk=0;
+			$eslesen_harf_sayisi=0;
 			$a=0;
 			foreach ($bulunan_kelime_arr as $key1 => $harf) {
-				if($harf==$kalip_arr[$key1]){
+				if($harf==$kalip_arr[$key1] && $harf && $kalip_arr[$key1]){
 					$a++;
-					$eslesen_harf_sayisi_ilk = $a;
+					$eslesen_harf_sayisi = $a;
 				}
 			}
-			if(count($bulunan_kelime_arr)==count($kalip_arr)){
-				$tara	= false;
-			}else{
-				if($eslesen_harf_sayisi_ilk>=$eslesen_harf_sayisi_son){
-					array_unshift($bulunan_kelime_arr,'');
-					$eslesen_harf_sayisi_son = $eslesen_harf_sayisi_ilk ;
-				}
-			}
-
-
-			if($eslesen_harf_sayisi_ilk<$eslesen_harf_sayisi_son){
+			if($eslesen_harf_sayisi_onceki>$eslesen_harf_sayisi){
 				$tara	= false;
 				array_shift($bulunan_kelime_arr);
+				return $bulunan_kelime_arr;
 			}
+			$eslesen_harf_sayisi_onceki = $eslesen_harf_sayisi;
+			if(count($bulunan_kelime_arr)==count($kalip_arr)){
+				$tara	= false;
+				return $bulunan_kelime_arr;
+			}
+			array_unshift($bulunan_kelime_arr,'');
 		}
-		return $bulunan_kelime_arr;
+
 	}
 }
