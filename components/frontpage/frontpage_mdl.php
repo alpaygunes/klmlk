@@ -345,7 +345,7 @@ class kelimeleriHazirla{
 		$kelimeler_arr = [];
 		foreach ($kalip_icin_temel_gruplar as $key=>$kalip) {
 			$regex      = '^'.$kalip['regex'].'$';
-			$sql        = "SELECT HEAD_MULT FROM kelimeler WHERE HEAD_MULT REGEXP '$regex'";
+			$sql        = "SELECT HEAD_MULT FROM kelimeler WHERE HEAD_MULT REGEXP '$regex' AND length(HEAD_MULT)>2";
 			$kalip_icin_temel_gruplar[$key]['kelimeler']    = $this->db->get_results($sql);
 		}
 		$this->kalip_icin_temel_gruplar =  $kalip_icin_temel_gruplar;
