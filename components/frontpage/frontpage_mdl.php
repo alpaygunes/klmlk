@@ -388,12 +388,10 @@ class kurallariUygula{
 				//$bulunan_kelime_arr_copy = $bulunan_kelime_arr;
 				$eldeki_harfler_arr_copy = $eldeki_harfler_arr;
 				foreach($eldeki_harfler_arr_copy as $key2=>$harf){
-					//if(in_array($harf,$eldeki_harfler_arr_copy)){
 					if(($key3 = array_search(strtolower($harf), $bulunan_kelime_arr)) !== false) {
 						unset($eldeki_harfler_arr[$key2]);
 						unset($bulunan_kelime_arr[$key3]);
 					}
-					//}
 				}
 				if(count($bulunan_kelime_arr)){
 					unset($this->kalip_icin_temel_gruplar[$key0]['kelimeler'][$key1]);
@@ -482,10 +480,11 @@ class kurallariUygula{
 
 			if($alt_bitti && $ust_bitti){
 				$yeni_kelime = $ust_parca . $harf . $alt_parca;
-				if(strlen($yeni_kelime)){
+				if(strlen($yeni_kelime)>1){
 					return $yeni_kelime;
+				}else{
+					return false;
 				}
-				return $yeni_kelime;
 				//dönmemeli
 				//veritabanında bakmalı bu kelime tabloda varmı
 			}
@@ -495,6 +494,8 @@ class kurallariUygula{
 	function kalibaOturmaKonumu($kalip_arr,$bulunan_kelime_arr){
 		$tara						= true;
 		$eslesen_harf_sayisi_onceki=0;
+		$sonuc = '';
+		$max_eslesme =0;
 		while($tara){
 			$eslesen_harf_sayisi=0;
 			$a=0;
@@ -505,14 +506,16 @@ class kurallariUygula{
 				}
 			}
 			if($eslesen_harf_sayisi_onceki>$eslesen_harf_sayisi){
-				$tara	= false;
 				array_shift($bulunan_kelime_arr);
-				return $bulunan_kelime_arr;
+				if($max_eslesme<$eslesen_harf_sayisi_onceki){
+					$max_eslesme = $eslesen_harf_sayisi_onceki;
+					$sonuc = $bulunan_kelime_arr;
+				}
 			}
 			$eslesen_harf_sayisi_onceki = $eslesen_harf_sayisi;
 			if(count($bulunan_kelime_arr)==count($kalip_arr)){
-				$tara	= false;
-				return $bulunan_kelime_arr;
+				//$tara	= false;
+				return $sonuc;
 			}
 			array_unshift($bulunan_kelime_arr,'');
 		}
