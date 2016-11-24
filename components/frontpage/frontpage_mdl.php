@@ -414,16 +414,20 @@ class kurallariUygula{
 			$kelimeler  = $grup_arr['kelimeler'];
 			$kalip_arr  = $grup_arr['kalip'];
 			foreach ($kelimeler as $key1 => $kelime) {
-				$bulunan_kelime_arr         = $this->str_split_unicode(strtolower($kelime->HEAD_MULT));
+				$bulunan_kelime_arr        = $this->str_split_unicode(strtolower($kelime->HEAD_MULT));
 				$kaliba_oturmus_arr        = $this->kalibaOturmaKonumu($kalip_arr,$bulunan_kelime_arr);
 				$this->kalip_icin_temel_gruplar[$key0]['kelimeler'][$key1]->kaliba_oturmus_hali=$kaliba_oturmus_arr;
+				$harfin_konumu=0;
 				foreach($kaliba_oturmus_arr as $key3=>$harf){
 					if($harf){
 						$harfin_konumu = $key3;
 						if($kalip_arr[$key3]==''){
 							// harfin olduğu kaılıbın boş olduğu yer yeni harf vardır altına üstüne bakılacak
-							$sutun = $grup_arr['konum']['sutun']+$harfin_konumu;
-							$yeni_kelime = $this->olusanYeniKelime($sutun,$grup_arr['konum']['satir'],$harf,$kart);
+							$sutun          = $grup_arr['konum']['sutun']+$harfin_konumu;
+							if(!isset($this->kalip_icin_temel_gruplar[$key0]['kelimeler'][$key1]->global_sutun_no)){
+								$this->kalip_icin_temel_gruplar[$key0]['kelimeler'][$key1]->global_sutun_no = $sutun;
+							}
+							$yeni_kelime    = $this->olusanYeniKelime($sutun,$grup_arr['konum']['satir'],$harf,$kart);
 							if($yeni_kelime){
 								$sql        = "SELECT HEAD_MULT FROM kelimeler WHERE HEAD_MULT = '$yeni_kelime'";
 								if(!count($db->get_results($sql))){
@@ -432,6 +436,11 @@ class kurallariUygula{
 							}
 						}
 					}
+				}
+				// bulunan kelime kalıpile aynıysa sil gitsin ç özelikle iki harflilerde çokça oluyor
+				// kalıp * * de * *  bulunan kelime  "de"  buduru istenmeyen durum de bu tür kelimeler silinmeli
+				if(!isset($this->kalip_icin_temel_gruplar[$key0]['kelimeler'][$key1]->global_sutun_no)){
+					unset($this->kalip_icin_temel_gruplar[$key0]['kelimeler'][$key1]);
 				}
 			}
 		}
@@ -466,7 +475,7 @@ class kurallariUygula{
 			}
 			//alt tarafta varmı
 			if(isset($kart[$alt_satir][$sutun]) && $kart[$alt_satir][$sutun]!=''){
-				$alt_parca = $alt_parca.$kart[$alt_satir][$sutun];
+				$alt_parca = $kart[$alt_satir][$sutun].$alt_parca;
 			}else{
 				$alt_bitti = true;
 			}

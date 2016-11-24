@@ -68,11 +68,16 @@ $kart .= "</table>\n";
 							value['kalip'][index]="*"
 						}
 					});
-					$('.sonuc').append("Normal Kalıp : "+value['kalip']+"<br>")
+					//$('.sonuc').append("Normal Kalıp : "+value['kalip']+"<br>")
 					$('.sonuc').append("Regex kalıp : " + value['regex']+"<br>")
+					var satir = value['konum']['satir'];
 					if(value['kelimeler']!=null){
 						$.each(value['kelimeler'], function( index, deger ) {
-							$('.sonuc').append(" ---- Kelimeler : " + deger['HEAD_MULT']+"<br>")
+							if(deger['HEAD_MULT']!=undefined){
+								$('.sonuc').append("<br> Kelimeler : " + deger['HEAD_MULT']+"<br>")
+								$('.sonuc').append(" ----Sütun : " + deger['global_sutun_no']+"/")
+								$('.sonuc').append("  Satır : " + satir+"<br>")
+							}
 						});
 					}
 
