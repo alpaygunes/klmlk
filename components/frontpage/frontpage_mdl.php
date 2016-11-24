@@ -491,6 +491,11 @@ class kurallariUygula{
 		}
 	}
 
+	/**
+	 * @param $kalip_arr
+	 * @param $bulunan_kelime_arr
+	 * @return string
+	 */
 	function kalibaOturmaKonumu($kalip_arr,$bulunan_kelime_arr){
 		$tara						= true;
 		$eslesen_harf_sayisi_onceki=0;
