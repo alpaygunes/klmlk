@@ -489,6 +489,12 @@ class kurallariUygula{
 				//veritabanında bakmalı bu kelime tabloda varmı
 			}
 		}
+
+
+
+
+
+
 	}
 
 	/**
