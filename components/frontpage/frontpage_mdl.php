@@ -6,13 +6,37 @@ class frontpage_mdl extends BaseModel{
 
 	function ajaxGetKelimeOnerileri(){
 		$kart 				= $_POST['kart'];
+		$kart_sola_donuk    = $this->kartiSolaDonder($kart);
 		$eldeki_harfler 	= $_POST['eldeki_harfler'];
+		// normal tablonun kelimeleirni bulalım
 		$kelimelik 			= new kelimelik($kart,$eldeki_harfler);
 		$kelimeler_hazirla 	= new kelimeleriHazirla($kelimelik->kalip_icin_temel_gruplar);
 		$kalip_icin_temel_gruplar	= $kelimeler_hazirla->kalip_icin_temel_gruplar;
-		$kurallari_uygula 	= new kurallariUygula($kalip_icin_temel_gruplar,$eldeki_harfler);
-		echo json_encode($kurallari_uygula->kalip_icin_temel_gruplar);
+		$normal_tablo_sonuclari 	= new kurallariUygula($kalip_icin_temel_gruplar,$eldeki_harfler);
+		$normal_tablo_sonuclari = $normal_tablo_sonuclari->kalip_icin_temel_gruplar;
+
+		// sola dönderilmiş tablonun kelimeleirni bulalım
+		$kelimelik 			= new kelimelik($kart,$eldeki_harfler);
+		$kelimeler_hazirla 	= new kelimeleriHazirla($kelimelik->kalip_icin_temel_gruplar);
+		$kalip_icin_temel_gruplar	= $kelimeler_hazirla->kalip_icin_temel_gruplar;
+		$sola_donuk_tablo_sonuclari 	= new kurallariUygula($kalip_icin_temel_gruplar,$eldeki_harfler);
+		$sola_donuk_tablo_sonuclari     = $sola_donuk_tablo_sonuclari->kalip_icin_temel_gruplar;
+
+		echo json_encode(array($normal_tablo_sonuclari,$sola_donuk_tablo_sonuclari));
 		exit();
+	}
+
+	function kartiSolaDonder($kart){
+		$yeni_kart = array();
+		for($a=0;$a<count($kart);$a++){//satırlar
+			for($b=count($kart[$a])-1;$b>=0;$b--){//sütunlar
+				$x_yeni = (count($kart[$a])-1) - $b;
+				$y_yeni = $a;
+				$yeni_kart[$x_yeni][$y_yeni]=$kart[$a][$b];
+			}
+		}
+		asort($yeni_kart);
+		return $yeni_kart;
 	}
 
 }

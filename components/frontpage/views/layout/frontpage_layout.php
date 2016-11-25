@@ -61,7 +61,7 @@ $kart .= "</table>\n";
 			success: function(json) {
 				console.log(json)
 				$('.sonuc').empty();
-				$.each(json, function( index, value ) {
+				$.each(json[0], function( index, value ) {
 					//$('.sonuc').append(value+"--------"+index+"<br>")
 					$.each(value['kalip'], function( index, deger ) {
 						if(deger==''){
