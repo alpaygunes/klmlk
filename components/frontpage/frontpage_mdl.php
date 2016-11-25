@@ -16,7 +16,7 @@ class frontpage_mdl extends BaseModel{
 		$normal_tablo_sonuclari = $normal_tablo_sonuclari->kalip_icin_temel_gruplar;
 
 		// sola dönderilmiş tablonun kelimeleirni bulalım
-		$kelimelik 			= new kelimelik($kart,$eldeki_harfler);
+		$kelimelik 			= new kelimelik($kart_sola_donuk,$eldeki_harfler);
 		$kelimeler_hazirla 	= new kelimeleriHazirla($kelimelik->kalip_icin_temel_gruplar);
 		$kalip_icin_temel_gruplar	= $kelimeler_hazirla->kalip_icin_temel_gruplar;
 		$sola_donuk_tablo_sonuclari 	= new kurallariUygula($kalip_icin_temel_gruplar,$eldeki_harfler);

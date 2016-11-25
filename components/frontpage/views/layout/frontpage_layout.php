@@ -28,7 +28,18 @@ $kart .= "</table>\n";
 					<td><input type="text" id="eldeki_harfler" name="eldeki_harfler" class="form-control text-left"></td>
 				</tr>
 				<tr>
-					<td class="sonuc"></td>
+					<td class="sonuc">
+						<table class="table">
+							<tr>
+								<td>Soldan Sağa</td>
+								<td>Yukardan Aşağı</td>
+							</tr>
+							<tr>
+								<td class="normal"></td>
+								<td class="sola_donu"></td>
+							</tr>
+						</table>
+					</td>
 				</tr>
 			</table>
 
@@ -60,31 +71,36 @@ $kart .= "</table>\n";
 			},
 			success: function(json) {
 				console.log(json)
-				$('.sonuc').empty();
-				$.each(json[0], function( index, value ) {
-					//$('.sonuc').append(value+"--------"+index+"<br>")
-					$.each(value['kalip'], function( index, deger ) {
-						if(deger==''){
-							value['kalip'][index]="*"
-						}
-					});
-					//$('.sonuc').append("Normal Kalıp : "+value['kalip']+"<br>")
-					$('.sonuc').append("---------------------------<br>Regex kalıp : " + value['regex']+"<br>")
-					var satir = value['konum']['satir'];
-					if(value['kelimeler']!=null){
-						$.each(value['kelimeler'], function( index, deger ) {
-							if(deger['HEAD_MULT']!=undefined){
-								$('.sonuc').append("<br> Kelimeler : " + deger['HEAD_MULT']+"<br>")
-								$('.sonuc').append(" -Sütun : " + deger['global_sutun_no']+"/")
-								$('.sonuc').append("  Satır : " + satir+"<br>")
+				$('.sonuc .normal').empty();
+				$('.sonuc .sola_donuk').empty();
+				ekrana_bas(json[0],".sonuc .normal")
+				ekrana_bas(json[1],".sonuc .sola_donu")
+				function ekrana_bas(json,konum){
+					$.each(json, function( index, value ) {
+						$.each(value['kalip'], function( index, deger ) {
+							if(deger==''){
+								value['kalip'][index]="*"
 							}
 						});
-					}
-
-					//$('.sonuc').append(""+value['konum'][0]+"-")
-					//$('.sonuc').append(value['konum'][1]+"<br>")
-					//$('.sonuc').append("<br><br>")
-				});
+						$('.sonuc').append("---------------------------<br>Regex kalıp : " + value['regex']+"<br>")
+						var satir = value['konum']['satir'];
+						if(value['kelimeler']!=null){
+							$.each(value['kelimeler'], function( index, deger ) {
+								if(deger['HEAD_MULT']!=undefined){
+									if(konum==".sonuc .normal"){
+										$(konum).append("<br> Kelimeler : " + deger['HEAD_MULT']+"<br>")
+										$(konum).append(" -Sütun : " + deger['global_sutun_no']+"/")
+										$(konum).append("  Satır : " + satir+"<br>")
+									}else{
+										$(konum).append("<br> Kelimeler : " + deger['HEAD_MULT']+"<br>")
+										$(konum).append(" -Satır : " + deger['global_sutun_no']+"/")
+										$(konum).append(" -Sütun : " + (20-satir) +"/")
+									}
+								}
+							});
+						}
+					});
+				}
 			},
 			error: function(xhr, ajaxOptions, thrownError) {
 				alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
