@@ -16,7 +16,7 @@ class frontpage_mdl extends BaseModel{
 
 		// sola dönderilmiş tablonun kelimeleirni bulalım
 		$kart_sola_donuk    = $this->kartiSolaDonder($kart);
-		$_POST['kart']	= $kart_sola_donuk;
+		$_POST['kart']		= $kart_sola_donuk;
 		$kelimelik 			= new kelimelik($kart_sola_donuk,$eldeki_harfler);
 		$kelimeler_hazirla 	= new kelimeleriHazirla($kelimelik->kalip_icin_temel_gruplar);
 		$kalip_icin_temel_gruplar	= $kelimeler_hazirla->kalip_icin_temel_gruplar;
