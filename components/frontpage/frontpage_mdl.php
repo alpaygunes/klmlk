@@ -6,7 +6,6 @@ class frontpage_mdl extends BaseModel{
 
 	function ajaxGetKelimeOnerileri(){
 		$kart 				= $_POST['kart'];
-		$kart_sola_donuk    = $this->kartiSolaDonder($kart);
 		$eldeki_harfler 	= $_POST['eldeki_harfler'];
 		// normal tablonun kelimeleirni bulalım
 		$kelimelik 			= new kelimelik($kart,$eldeki_harfler);
@@ -16,6 +15,8 @@ class frontpage_mdl extends BaseModel{
 		$normal_tablo_sonuclari = $normal_tablo_sonuclari->kalip_icin_temel_gruplar;
 
 		// sola dönderilmiş tablonun kelimeleirni bulalım
+		$kart_sola_donuk    = $this->kartiSolaDonder($kart);
+		$_POST['kart']	= $kart_sola_donuk;
 		$kelimelik 			= new kelimelik($kart_sola_donuk,$eldeki_harfler);
 		$kelimeler_hazirla 	= new kelimeleriHazirla($kelimelik->kalip_icin_temel_gruplar);
 		$kalip_icin_temel_gruplar	= $kelimeler_hazirla->kalip_icin_temel_gruplar;
@@ -368,6 +369,7 @@ class kelimeleriHazirla{
 	function getKelimeler($kalip_icin_temel_gruplar){
 		$kelimeler_arr = [];
 		foreach ($kalip_icin_temel_gruplar as $key=>$kalip) {
+			//kalıp içindeki paçaları ulmamalı mesala * * * * ara * *aşk * *    içindeki ara ve aşk ı bulmamalı
 			$regex      = '^'.$kalip['regex'].'$';
 			$sql        = "SELECT HEAD_MULT FROM kelimeler WHERE HEAD_MULT REGEXP '$regex' AND length(HEAD_MULT)>2";
 			$kalip_icin_temel_gruplar[$key]['kelimeler']    = $this->db->get_results($sql);
@@ -528,7 +530,6 @@ class kurallariUygula{
 	 */
 	function kalibaOturmaKonumu($kalip_arr,$bulunan_kelime_arr){
 		$tara						= true;
-		$eslesen_harf_sayisi_onceki=0;
 		$sonuc = '';
 		$max_eslesme =0;
 		while($tara){
@@ -540,16 +541,15 @@ class kurallariUygula{
 					$eslesen_harf_sayisi = $a;
 				}
 			}
-			if($eslesen_harf_sayisi_onceki>$eslesen_harf_sayisi){
-				array_shift($bulunan_kelime_arr);
-				if($max_eslesme<$eslesen_harf_sayisi_onceki){
-					$max_eslesme = $eslesen_harf_sayisi_onceki;
+			//if($eslesen_harf_sayisi_onceki>$eslesen_harf_sayisi){
+			if($max_eslesme<$eslesen_harf_sayisi){
+					$max_eslesme = $eslesen_harf_sayisi;
 					$sonuc = $bulunan_kelime_arr;
 				}
-			}
-			$eslesen_harf_sayisi_onceki = $eslesen_harf_sayisi;
+			//}
 			if(count($bulunan_kelime_arr)==count($kalip_arr)){
 				//$tara	= false;
+				array_shift($bulunan_kelime_arr);
 				return $sonuc;
 			}
 			array_unshift($bulunan_kelime_arr,'');
