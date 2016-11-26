@@ -35,7 +35,7 @@ class frontpage_mdl extends BaseModel{
 				$yeni_kart[$x_yeni][$y_yeni]=$kart[$a][$b];
 			}
 		}
-		asort($yeni_kart);
+		//asort($yeni_kart);
 		return $yeni_kart;
 	}
 

@@ -1,6 +1,6 @@
 <?php
-$satir_sayisi = 20;
-$sutun_sayisi = 20;
+$satir_sayisi = 15;
+$sutun_sayisi = 15;
 $kart =  "<table class='table table-bordered kart' >\n";
 	for($a=0;$a<$satir_sayisi;$a++){
 		$kart .= "<tr id=\"satir".$a."\">\n";
@@ -20,28 +20,30 @@ $kart .= "</table>\n";
 				?>
 		</td>
 		<td class='sag-sutun'>
-			<table class="table">
-				<tr>
-					<td><input type="button" id="gonder" class="btn btn-primary" value="Gönder"></td>
-				</tr>
-				<tr>
-					<td><input type="text" id="eldeki_harfler" name="eldeki_harfler" class="form-control text-left"></td>
-				</tr>
-				<tr>
-					<td class="sonuc">
-						<table class="table">
-							<tr>
-								<td>Soldan Sağa</td>
-								<td>Yukardan Aşağı</td>
-							</tr>
-							<tr>
-								<td class="normal"></td>
-								<td class="sola_donu"></td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-			</table>
+			<div style="height: 600px;overflow: scroll;width: 100%">
+				<table class="table">
+					<tr>
+						<td><input type="button" id="gonder" class="btn btn-primary" value="Gönder"></td>
+					</tr>
+					<tr>
+						<td><input type="text" id="eldeki_harfler" name="eldeki_harfler" class="form-control text-left"></td>
+					</tr>
+					<tr>
+						<td class="sonuc">
+							<table class="table table-bordered">
+								<tr>
+									<td>Soldan Sağa</td>
+									<td>Yukardan Aşağı</td>
+								</tr>
+								<tr>
+									<td class="normal"></td>
+									<td class="sola_donuk"></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</table>
+			</div>
 
 		</td>
 	</tr>
@@ -53,10 +55,14 @@ $kart .= "</table>\n";
 
 <script>
 	$('#gonder').on('click', function() {
+		$('.sonuc .normal').empty();
+		$('.sonuc .sola_donuk').empty;
+		$('.sonuc .normal').html('<i class="fa fa-spinner fa-spin" style="font-size:24px"></i>');
+		$('.sonuc .sola_donuk').html('<i class="fa fa-spinner fa-spin" style="font-size:24px"></i>');
 		component 			= "frontpage";
 		command				= "ajaxGetKelimeOnerileri";
 		var data = $('#form-upload').serialize();
-		var jsonString = JSON.stringify(data);
+		//var jsonString = JSON.stringify(data);
 		$.ajax({
 			url: 'index.php?no_template=1&component='+component+'&command='+command,
 			dataType: 'json',
@@ -64,7 +70,7 @@ $kart .= "</table>\n";
 			dataType: 'json',
 			data: data,
 			beforeSend: function() {
-				//alert("Before")
+
 			},
 			complete: function() {
 				$('.fa-spin').remove();
@@ -72,9 +78,9 @@ $kart .= "</table>\n";
 			success: function(json) {
 				console.log(json)
 				$('.sonuc .normal').empty();
-				$('.sonuc .sola_donuk').empty();
+				$('.sonuc .sola_donuk').empty;
 				ekrana_bas(json[0],".sonuc .normal")
-				ekrana_bas(json[1],".sonuc .sola_donu")
+				ekrana_bas(json[1],".sonuc .sola_donuk")
 				function ekrana_bas(json,konum){
 					$.each(json, function( index, value ) {
 						$.each(value['kalip'], function( index, deger ) {
@@ -82,19 +88,19 @@ $kart .= "</table>\n";
 								value['kalip'][index]="*"
 							}
 						});
-						$('.sonuc').append("---------------------------<br>Regex kalıp : " + value['regex']+"<br>")
+						//$('.sonuc').append("---------------------------<br>Regex kalıp : " + value['regex']+"<br>")
 						var satir = value['konum']['satir'];
 						if(value['kelimeler']!=null){
 							$.each(value['kelimeler'], function( index, deger ) {
 								if(deger['HEAD_MULT']!=undefined){
 									if(konum==".sonuc .normal"){
-										$(konum).append("<br> Kelimeler : " + deger['HEAD_MULT']+"<br>")
-										$(konum).append(" -Sütun : " + deger['global_sutun_no']+"/")
-										$(konum).append("  Satır : " + satir+"<br>")
+										$(konum).append("<br>" + deger['HEAD_MULT']+ "\t\t")
+										$(konum).append(satir)
+										$(konum).append(" / " + deger['global_sutun_no'])
 									}else{
-										$(konum).append("<br> Kelimeler : " + deger['HEAD_MULT']+"<br>")
-										$(konum).append(" -Satır : " + deger['global_sutun_no']+"/")
-										$(konum).append(" -Sütun : " + (20-satir) +"/")
+										$(konum).append("<br>" + deger['HEAD_MULT'] + "\t\t")
+										$(konum).append(deger['global_sutun_no'])
+										$(konum).append(" / " + (15-satir))
 									}
 								}
 							});
