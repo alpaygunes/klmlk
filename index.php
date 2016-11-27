@@ -16,7 +16,7 @@ if (get_magic_quotes_gpc()) {
 	$_REQUEST  = array_map('stripslashes_deep', $_REQUEST);
 }
 
-include_once('library/facebookv440/autoload.php');
+//include_once('library/facebookv440/autoload.php');
 include_once("configuration.php");
 include_once("library/sayac.php");
 include_once("language/set.php");
@@ -39,7 +39,7 @@ include_once("library/BaseView.php");
 include_once("library/BaseModel.php");
 include_once("library/BaseController.php");
 include_once("library/Core.php");
-include_once("library/PHPMailer/PHPMailerAutoload.php");
+//include_once("library/PHPMailer/PHPMailerAutoload.php");
 $CHTML 		= new CHTML();
 //db için
 $db = new ezSQL_pdo('mysql:host='.configuration::$db_host.';dbname='.configuration::$db_name,

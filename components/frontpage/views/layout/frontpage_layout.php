@@ -14,13 +14,12 @@ $kart .= "</table>\n";
 <form enctype="multipart/form-data" id="form-upload">
 <table class='table table-bordered'>
 	<tr>
-		<td>
+		<td width="50%">
 				<?php
 				echo $kart;
 				?>
 		</td>
-		<td class='sag-sutun'>
-			<div style="height: 600px;overflow: scroll;width: 100%">
+		<td width="50%">
 				<table class="table">
 					<tr>
 						<td><input type="button" id="gonder" class="btn btn-primary" value="Gönder"></td>
@@ -30,20 +29,22 @@ $kart .= "</table>\n";
 					</tr>
 					<tr>
 						<td class="sonuc">
-							<table class="table table-bordered">
-								<tr>
-									<td>Soldan Sağa</td>
-									<td>Yukardan Aşağı</td>
-								</tr>
-								<tr>
-									<td class="normal"></td>
-									<td class="sola_donuk"></td>
-								</tr>
-							</table>
+							<div style="height: 500px;overflow: scroll;width: 100%">
+								<table class="table table-bordered">
+									<tr>
+										<td>Soldan Sağa</td>
+										<td>Yukardan Aşağı</td>
+									</tr>
+									<tr>
+										<td class="normal"></td>
+										<td class="sola_donuk"></td>
+									</tr>
+								</table>
+							</div>
 						</td>
 					</tr>
 				</table>
-			</div>
+
 
 		</td>
 	</tr>
@@ -93,14 +94,14 @@ $kart .= "</table>\n";
 						if(value['kelimeler']!=null){
 							$.each(value['kelimeler'], function( index, deger ) {
 								if(deger['HEAD_MULT']!=undefined){
+									harf_sayisi = deger['HEAD_MULT'].length*deger['HEAD_MULT'].length;
+									if(harf_sayisi<6){
+										harf_sayisi = 6
+									}
 									if(konum==".sonuc .normal"){
-										$(konum).append("<br>" + deger['HEAD_MULT']+ "\t\t")
-										$(konum).append(satir)
-										$(konum).append(" / " + deger['global_sutun_no'])
+										$(konum).append("<br><span style=\"font-size:"+harf_sayisi+"px\" class=\"belirtec\" satir=\""+(satir)+"\" sutun=\""+deger['global_sutun_no']+"\">" + deger['HEAD_MULT'] + "</span>\t\t")
 									}else{
-										$(konum).append("<br>" + deger['HEAD_MULT'] + "\t\t")
-										$(konum).append(deger['global_sutun_no'])
-										$(konum).append(" / " + (15-satir))
+										$(konum).append("<br><span style=\"font-size:"+harf_sayisi+"px\" class=\"belirtec\" satir=\""+deger['global_sutun_no']+"\" sutun=\""+(15-satir-1)+"\">" + deger['HEAD_MULT'] + "</span>\t\t")
 									}
 								}
 							});
@@ -113,6 +114,19 @@ $kart .= "</table>\n";
 			}
 		});
 	});
+
+	$('.sonuc').on("mouseover",'.belirtec',function () {
+		satir= $(this).attr('satir');
+		sutun= $(this).attr('sutun');
+		hedef_id = '#txt_'+satir+''+sutun;
+		$(hedef_id).css('background','#ccc');
+	})
+	$('.sonuc').on("mouseout",'.belirtec',function () {
+		satir= $(this).attr('satir');
+		sutun= $(this).attr('sutun');
+		hedef_id = '#txt_'+satir+''+sutun;
+		$(hedef_id).css('background','#fff');
+	})
 
 </script>
 
