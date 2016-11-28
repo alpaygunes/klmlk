@@ -22,10 +22,15 @@ $kart .= "</table>\n";
 		<td width="50%">
 				<table class="table">
 					<tr>
-						<td><input type="button" id="gonder" class="btn btn-primary" value="Gönder"></td>
+						<td>
+							<input type="button" id="gonder" class="btn btn-primary" value="Yeni Kelime">
+							<a id="kaydet"  class="btn pull-right"> Kaydet </a>
+							<a id="ac" 		class="btn pull-right" > Aç </a>
+							<input type="file" name="fileToUpload" id="fileToUpload" style="display: none;">
+						</td>
 					</tr>
 					<tr>
-						<td><input type="text" id="eldeki_harfler" name="eldeki_harfler" class="form-control text-left"></td>
+						<td><input type="text" id="eldeki_harfler" name="eldeki_harfler" class="form-control text-left" placeholder="Sahib Olduğunuz Harflerinizi Yazın"></td>
 					</tr>
 					<tr>
 						<td class="sonuc">
@@ -128,5 +133,45 @@ $kart .= "</table>\n";
 		$(hedef_id).css('background','#fff');
 	})
 
-</script>
 
+	var anchor = document.getElementById('kaydet');
+	anchor.onclick = function() {
+		veri =''
+		$('.txt_harf').each(function (index, value) {
+			if(index){
+				veri = veri + ',' + $(value).val();
+			}else{
+				veri = $(value).val();
+			}
+		})
+		console.log(veri)
+		veri = veri +"#" + $('#eldeki_harfler').val();
+		anchor.href = 'data:text/plain;charset=utf-8,' + veri;
+		anchor.download = 'export.txt';
+	};
+
+	$('#ac').click(function () {
+		$('#fileToUpload').trigger("click")
+	})
+
+	$("#fileToUpload").change(function (e) {
+		var file  = e.target.files[0];
+		var textType = /text.*/;
+		if (file.type.match(textType)) {
+			var reader = new FileReader();
+			reader.onload = function(e) {
+				veri 				= reader.result;
+				var parcalar_arr 	= veri.split('#');
+				var harfler_arr 	= parcalar_arr[0].split(',');
+				$('#eldeki_harfler').val(parcalar_arr[1]);
+				$('.txt_harf').each(function (index, value) {
+					$(value).val(harfler_arr[index]);
+				})
+			}
+			reader.readAsText(file);
+		} else {
+			alert("Dosya formatı uyumsuz")
+		}
+	});
+
+</script>
